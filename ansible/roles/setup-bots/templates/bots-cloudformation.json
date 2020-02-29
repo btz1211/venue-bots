@@ -1,0 +1,199 @@
+{
+  "Description": "Cloud Formation for setting up all the core AWS components for bots",
+  "Parameters": {
+    "LambdaBucketName": {
+      "ConstraintDescription": "Must be a string",
+      "Description": "S3 Bucket name for the lambdas",
+      "Type": "String"
+    },
+    "DynamoDBTableName": {
+      "ConstraintDescription": "Must be a string",
+      "Description": "Table name that contains bot job meta data",
+      "Type": "String"
+    },
+    "GoogleLambdaName": {
+      "ConstraintDescription": "Must be a string",
+      "Description": "Name for the Google bot",
+      "Type": "String"
+    }
+  },
+  "Outputs": {
+    "LambdaBucket": {
+      "Description": "S3 Bucket that contains all the lambdas",
+      "Value": {
+        "Ref": "LambdaS3Bucket"
+      },
+      "Export": {
+        "Name": {
+          "Ref": "LambdaBucketName"
+        }
+      }
+    }
+  },
+  "Resources": {
+    "LambdaS3BucketRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sts:AssumeRole"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "s3.amazonaws.com"
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "LambdaS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DependsOn": [
+        "LambdaS3BucketRole"
+      ],
+      "Properties": {
+        "BucketName": {
+          "Ref": "LambdaBucketName"
+        },
+        "AccessControl": "Private"
+      }
+    },
+    "BotJobMetaDataDynamoTable": {
+      "Type" : "AWS::DynamoDB::Table",
+      "Properties" : {
+        "AttributeDefinitions" : [
+          {
+            "AttributeName" : "jobId",
+            "AttributeType" : "S"
+          },
+          {
+            "AttributeName" : "jobType",
+            "AttributeType" : "S"
+          },
+          {
+            "AttributeName" : "jobTimestamp",
+            "AttributeType" : "N"
+          }
+        ],
+        "KeySchema" : [
+          {
+            "AttributeName" : "jobType",
+            "KeyType" : "HASH"
+          },
+          {
+            "AttributeName" : "jobTimestamp",
+            "KeyType" : "RANGE"
+          }
+        ],
+        "GlobalSecondaryIndexes" : [{
+          "IndexName" : "jobid-index",
+          "KeySchema" : [
+            {
+              "AttributeName" : "jobId",
+              "KeyType" : "HASH"
+            }
+          ],                         
+          "Projection" : {
+            "NonKeyAttributes" : ["jobId"],
+            "ProjectionType" : "ALL"
+          },
+          "ProvisionedThroughput" : {
+            "ReadCapacityUnits" : "5",
+            "WriteCapacityUnits" : "5"
+          }
+        }],
+        "TableName" : {"Ref": "DynamoDBTableName" },
+        "ProvisionedThroughput" : {
+          "ReadCapacityUnits" : "5",
+          "WriteCapacityUnits" : "5"
+        }
+      }
+    },
+    "GoogleBotLambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "DependsOn": ["LambdaS3Bucket"],
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "DynamoInvocation",
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "logs:*",
+                    "cloudwatch:*",
+                    "dynamodb:*",
+                    "secretsmanager:GetSecretValue",
+                    "xray:PutTraceSegments"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "GoogleBotLambda": {
+      "Type": "AWS::Lambda::Function",
+      "DependsOn": [
+        "GoogleBotLambdaExecutionRole"
+      ],
+      "Properties": {
+        "Code": {
+          "ZipFile": {
+            "Fn::Join": [
+              "",
+              [
+                "exports.handler = function(event, context) {}"
+              ]
+            ]
+          }
+        },
+        "FunctionName": {
+          "Ref": "GoogleLambdaName"
+        },
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "GoogleBotLambdaExecutionRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs12.x",
+        "Timeout": "300",
+        "TracingConfig": {
+          "Mode": "Active"
+        },
+        "Environment": {
+          "Variables": {
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+---
+# consider running with --skip-tags=aws[,build,deploy]
+- name: provision bots deployment scripts
+  hosts: localhost
+  roles:
+    - setup-bots

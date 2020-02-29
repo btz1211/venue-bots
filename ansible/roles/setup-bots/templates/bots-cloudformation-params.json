@@ -1,0 +1,14 @@
+[
+  {
+    "ParameterKey": "LambdaBucketName",
+    "ParameterValue": "{{ lambda_bucket_name }}"
+  },
+  {
+    "ParameterKey": "DynamoDBTableName",
+    "ParameterValue": "{{ dynamo_table_name }}"
+  },
+  {
+    "ParameterKey": "GoogleLambdaName",
+    "ParameterValue": "{{ google_lambda_name }}"
+  }
+]

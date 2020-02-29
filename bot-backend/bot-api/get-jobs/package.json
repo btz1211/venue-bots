@@ -1,0 +1,10 @@
+{
+  "name": "bot-api",
+  "version": "1.0.0",
+  "description": "Node scripts that contains lambdas of hotjot bot control API's",
+  "author": "Baote Zheng <baote.zheng@gmail.com>",
+  "dependencies": {
+    "aws-client": "file:../../aws-client"
+  },
+  "devDependencies": {}
+}

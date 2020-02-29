@@ -1,0 +1,11 @@
+{
+    "name": "aws-client",
+    "version": "1.0.0",
+    "description": "Library for accessing aws resources",
+    "author": "Baote Zheng <baote.zheng@gmail.com>",
+    "main": "aws.js",
+    "dependencies": {},
+    "devDependencies": {
+        "aws-sdk": "^2.548.0"
+    }
+}

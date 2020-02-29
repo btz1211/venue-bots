@@ -1,0 +1,46 @@
+# vars related deployment
+ansible_output_directory: "../dist/venue-bots"
+cloudformation_stack_name: "venue-bots"
+lambda_cloudformation_script: "bots-cloudformation.json"
+api_cloudformation_script: "bots-api-cloudformation.yml"
+cloudformation_parameters: "bots-cloudformation-params.json"
+
+# vars for related to aws resources
+dynamo_table_name: "venue-bots"
+lambda_bucket_name: "venue-bots-lambdas"
+ui_assets_bucket_name: "venue-bots-ui"
+google_lambda_name: "venue-google-bot"
+
+bot_api_get_jobs_lambda_name: "bot-get-jobs"
+bot_api_create_job_lambda_name: "bot-create-job"
+bot_api_delete_job_lambda_name: "bot-delete-job"
+bot_api_update_job_status_lambda_name: "bot-update-job-status"
+
+# aws client lib
+aws_lib_source_dir: "aws-client"
+aws_lib_source_code_dir: "../bot-backend/aws-client"
+
+# google bot vars
+google_bot_source_dir: "google-bot"
+google_bot_lambda_zip: "google-bot.zip"
+google_bot_source_code_dir: "../bot-backend/google-bot"
+
+# get jobs api vars
+get_jobs_api_source_dir: "bot-api/get-jobs"
+get_jobs_api_lambda_zip: "bot-api-get-jobs.zip"
+get_jobs_api_source_code_dir: "../bot-backend/bot-api/get-jobs"
+
+# create job api vars
+create_job_api_source_dir: "bot-api/create-job"
+create_job_api_lambda_zip: "bot-api-create-job.zip"
+create_job_api_source_code_dir: "../bot-backend/bot-api/create-job"
+
+# delete job api vars
+delete_job_api_source_dir: "bot-api/delete-job"
+delete_job_api_lambda_zip: "bot-api-delete-job.zip"
+delete_job_api_source_code_dir: "../bot-backend/bot-api/delete-job"
+
+# update job status api vars
+update_job_status_api_source_dir: "bot-api/update-job-status"
+update_job_statusapi_lambda_zip: "bot-api-update-job-status.zip"
+update_job_status_api_source_code_dir: "../bot-backend/bot-api/update-job-status"

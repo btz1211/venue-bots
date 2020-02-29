@@ -1,0 +1,250 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Cloud Formation for setting up all the core AWS components for bots
+
+Resources:
+  GetJobs:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      Policies: AWSLambdaFullAccess
+      CodeUri: ../{{ get_jobs_api_source_dir }}/
+      Events:
+        GetJobResource:
+          Type: Api
+          Properties:
+            Path: /jobs/{botType}
+            Method: get
+            RestApiId:
+                Ref: BotAPI
+  CreateJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      Policies: AWSLambdaFullAccess
+      CodeUri: ../{{ create_job_api_source_dir }}/
+      Events:
+        CreateJobResource:
+          Type: Api
+          Properties:
+            Path: /job
+            Method: post
+            RestApiId:
+                Ref: BotAPI
+  DeleteJob:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      Policies: AWSLambdaFullAccess
+      CodeUri: ../{{ delete_job_api_source_dir }}/
+      Events:
+        DeleteJobResource:
+          Type: Api
+          Properties:
+            Path: /job/{jobId}
+            Method: delete
+            RestApiId:
+                Ref: BotAPI        
+  UpdateJobStatus:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: index.handler
+      Runtime: nodejs8.10
+      Policies: AWSLambdaFullAccess
+      CodeUri: ../{{ update_job_status_api_source_dir }}/
+      Events:
+        UpdateJobStatusResource:
+          Type: Api
+          Properties:
+            Path: /job/{jobId}/{action}
+            Method: put
+            RestApiId:
+                Ref: BotAPI
+
+  BotAPI:
+    Type: AWS::Serverless::Api
+    DependsOn: 
+      - GetJobs
+      - CreateJob
+      - DeleteJob
+      - UpdateJobStatus
+    Properties:
+        StageName: Prod
+        DefinitionBody:
+          swagger: "2.0"
+          info:
+            version: "1.0"
+            title: "venue-bots-api"
+          schemes:
+          - "https"
+          paths:
+            /jobs/{botType}:
+              get:
+                produces:
+                  - application/json
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${GetJobs.Arn}/invocations"
+                  passthroughBehavior: "when_no_match"
+                  httpMethod: "POST"
+                  type: "aws_proxy"
+            /job:
+              post:
+                consumes:
+                  - application/json
+                produces:
+                  - application/json
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                parameters:
+                  - in: body
+                    type: object
+                    name: job-data
+                    required: true
+                    schema:
+                      $ref: "#/definitions/JobData"
+                x-amazon-apigateway-integration:
+                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${CreateJob.Arn}/invocations"
+                  passthroughBehavior: "when_no_match"
+                  httpMethod: "POST"
+                  type: "aws_proxy"
+              options:
+                consumes:
+                - "application/json"
+                produces:
+                - "application/json"
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                      Access-Control-Allow-Methods:
+                        type: "string"
+                      Access-Control-Allow-Headers:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  responses:
+                    default:
+                      statusCode: "200"
+                      responseParameters:
+                        method.response.header.Access-Control-Allow-Methods: "'OPTIONS,POST'"
+                        method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                        method.response.header.Access-Control-Allow-Origin: "'*'"
+                  requestTemplates:
+                    application/json: "{\"statusCode\": 200}"
+                  passthroughBehavior: "when_no_match"
+                  type: "mock"
+            /job/{jobId}:
+              delete:
+                produces:
+                  - application/json
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${DeleteJob.Arn}/invocations"
+                  passthroughBehavior: "when_no_match"
+                  httpMethod: "POST"
+                  type: "aws_proxy"
+              options:
+                consumes:
+                - "application/json"
+                produces:
+                - "application/json"
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                      Access-Control-Allow-Methods:
+                        type: "string"
+                      Access-Control-Allow-Headers:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  responses:
+                    default:
+                      statusCode: "200"
+                      responseParameters:
+                        method.response.header.Access-Control-Allow-Methods: "'OPTIONS,DELETE'"
+                        method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                        method.response.header.Access-Control-Allow-Origin: "'*'"
+                  requestTemplates:
+                    application/json: "{\"statusCode\": 200}"
+                  passthroughBehavior: "when_no_match"
+                  type: "mock"
+            /job/{jobId}/{action}:
+              put:
+                produces:
+                  - application/json
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${UpdateJobStatus.Arn}/invocations"
+                  passthroughBehavior: "when_no_match"
+                  httpMethod: "POST"
+                  type: "aws_proxy"
+              options:
+                consumes:
+                - "application/json"
+                produces:
+                - "application/json"
+                responses:
+                  "200":
+                    description: "200 response"
+                    headers:
+                      Access-Control-Allow-Origin:
+                        type: "string"
+                      Access-Control-Allow-Methods:
+                        type: "string"
+                      Access-Control-Allow-Headers:
+                        type: "string"
+                x-amazon-apigateway-integration:
+                  responses:
+                    default:
+                      statusCode: "200"
+                      responseParameters:
+                        method.response.header.Access-Control-Allow-Methods: "'OPTIONS,PUT'"
+                        method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+                        method.response.header.Access-Control-Allow-Origin: "'*'"
+                  requestTemplates:
+                    application/json: "{\"statusCode\": 200}"
+                  passthroughBehavior: "when_no_match"
+                  type: "mock"
+          definitions:
+            JobData:
+              jobType:
+                type: string
+                example: google
+              radius:
+                type: number
+                example: 10000
+              limit:
+                type: number
+                example: 100
+              location:
+                type: string
+                example: new york
+              query:
+                type: string
+                example: italian restaurants

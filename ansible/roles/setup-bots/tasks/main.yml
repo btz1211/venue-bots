@@ -1,0 +1,115 @@
+---
+- name: remove output directory
+  file: path="{{ ansible_output_directory }}" state=absent
+
+- name: create output directory
+  file: path="{{ ansible_output_directory }}" state=directory
+
+- name: make config directory
+  file: path="{{ ansible_output_directory }}/config" state=directory
+  
+- name: push cloudformation.json for lambdas to config
+  template:
+    src: "{{ lambda_cloudformation_script }}"
+    dest: "{{ ansible_output_directory }}/config/{{ lambda_cloudformation_script }}"
+
+- name: generate core cloudformation parameters
+  template:
+    src: "{{ cloudformation_parameters }}"
+    dest: "{{ ansible_output_directory }}/config/{{ cloudformation_parameters }}"
+
+- name: generate cloudformation script for api gateway
+  template:
+    src: "{{ api_cloudformation_script }}"
+    dest: "{{ ansible_output_directory }}/config/{{ api_cloudformation_script }}"
+
+- name: copy provision script
+  template:
+    src: provision.bash
+    dest: "{{ ansible_output_directory }}/provision.bash"
+    mode: 0755
+
+- name: setup aws client lib
+  synchronize:
+    src: "{{ aws_lib_source_code_dir }}"
+    dest: "{{ ansible_output_directory }}"
+    rsync_opts:
+      - "--exclude=node_modules"
+      - "--exclude=package-lock.json"
+
+# setup google bot
+- name: copy over google bot src files
+  synchronize:
+    src: "{{ google_bot_source_code_dir }}"
+    dest: "{{ ansible_output_directory }}"
+    rsync_opts:
+      - "--exclude=node_modules"
+      - "--exclude=package-lock.json"
+      - "--exclude=main.js"
+      - "--exclude=README.md"
+
+- name: run npm for google bot
+  npm:
+    path: "{{ ansible_output_directory }}/{{ google_bot_source_dir }}"
+    production: yes
+
+# setup api lambdas
+# get jobs api
+- name: create directory for get jobs api
+  file: path="{{ ansible_output_directory }}/{{ get_jobs_api_source_dir }}" state=directory
+
+- name: copy over src files for get jobs lambda
+  copy: src={{ get_jobs_api_source_code_dir }}/getJobs.js dest={{ ansible_output_directory }}/{{ get_jobs_api_source_dir }}/index.js
+
+- name: copy over package json file
+  copy: src={{ get_jobs_api_source_code_dir }}/package.json dest={{ ansible_output_directory }}/{{ get_jobs_api_source_dir }}
+
+- name: run npm for get jobs api
+  npm:
+    path: "{{ ansible_output_directory }}/{{ get_jobs_api_source_dir }}"
+    production: yes
+
+# create job api
+- name: create directory for create job api
+  file: path="{{ ansible_output_directory }}/{{ create_job_api_source_dir }}" state=directory
+
+- name: copy over src files for create job lambda
+  copy: src={{ create_job_api_source_code_dir }}/createJob.js dest={{ ansible_output_directory }}/{{ create_job_api_source_dir }}/index.js
+
+- name: copy over package json file
+  copy: src={{ create_job_api_source_code_dir }}/package.json dest={{ ansible_output_directory }}/{{ create_job_api_source_dir }}
+
+- name: run npm for create job api
+  npm:
+    path: "{{ ansible_output_directory }}/{{ create_job_api_source_dir }}"
+    production: yes
+
+# delete job api
+- name: create directory for delete job api
+  file: path="{{ ansible_output_directory }}/{{ delete_job_api_source_dir }}" state=directory
+
+- name: copy over src files for delete job lambda
+  copy: src={{ delete_job_api_source_code_dir }}/deleteJob.js dest={{ ansible_output_directory }}/{{ delete_job_api_source_dir }}/index.js
+
+- name: copy over package json file
+  copy: src={{ delete_job_api_source_code_dir }}/package.json dest={{ ansible_output_directory }}/{{ delete_job_api_source_dir }}
+
+- name: run npm for delete job api
+  npm:
+    path: "{{ ansible_output_directory }}/{{ delete_job_api_source_dir }}"
+    production: yes
+
+# update job status api
+- name: create directory for update job status api
+  file: path="{{ ansible_output_directory }}/{{ update_job_status_api_source_dir }}" state=directory
+
+- name: copy over src files for update job status lambda
+  copy: src={{ update_job_status_api_source_code_dir }}/updateJobStatus.js dest={{ ansible_output_directory }}/{{ update_job_status_api_source_dir }}/index.js
+
+- name: copy over package json file
+  copy: src={{ update_job_status_api_source_code_dir }}/package.json dest={{ ansible_output_directory }}/{{ update_job_status_api_source_dir }}
+
+- name: run npm for update job status api
+  npm:
+    path: "{{ ansible_output_directory }}/{{ update_job_status_api_source_dir }}"
+    production: yes

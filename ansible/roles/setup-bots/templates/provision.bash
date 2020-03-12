@@ -48,8 +48,8 @@ if [[ $BOTS_STACK_IN_GOOD_STATUS == 0 ]]; then
   aws s3 cp {{ google_bot_lambda_zip }} s3://{{ lambda_bucket_name }}/{{ google_bot_lambda_zip }}
   aws lambda update-function-code --function-name {{ google_lambda_name }} --s3-bucket {{ lambda_bucket_name }} --s3-key {{ google_bot_lambda_zip }} --publish
 
-  # =========================provision the hotjot bots api stack=========================
+  # =========================provision the venue bots api stack=========================
   cd $CWD
   sam package --template-file config/{{ api_cloudformation_script }} --output-template-file config/{{ api_cloudformation_script }} --s3-bucket {{ lambda_bucket_name }}
-  sam deploy --template-file config/{{ api_cloudformation_script }} --stack-name hotjot-bots-api --capabilities CAPABILITY_IAM
+  sam deploy --template-file config/{{ api_cloudformation_script }} --stack-name venue-bots-api --capabilities CAPABILITY_IAM
 fi

@@ -9,6 +9,4 @@ data = {
 }
 
 const client = new AWSClient('venue-bots');
-// client.getJobs('google-bot', '1574348779508').then(data => console.log(data)).catch(error => console.log(error));
-client.createJob(data, 'google-bot');
-// client.getJob('google-bot', '1580656207328')
+client.startJob('google-bot', '1580656207328')

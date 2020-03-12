@@ -7,7 +7,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Policies: AWSLambdaFullAccess
       CodeUri: ../{{ get_jobs_api_source_dir }}/
       Events:
@@ -22,7 +22,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Policies: AWSLambdaFullAccess
       CodeUri: ../{{ create_job_api_source_dir }}/
       Events:
@@ -37,7 +37,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Policies: AWSLambdaFullAccess
       CodeUri: ../{{ delete_job_api_source_dir }}/
       Events:
@@ -52,7 +52,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: index.handler
-      Runtime: nodejs8.10
+      Runtime: nodejs12.x
       Policies: AWSLambdaFullAccess
       CodeUri: ../{{ update_job_status_api_source_dir }}/
       Events:

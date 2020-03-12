@@ -1,4 +1,4 @@
-HotJot Bot - Get Jobs API
+Venue Bot - Get Jobs API
 ============
 
 ### Description
@@ -10,7 +10,7 @@ This lambda gets all of the jobs created
 
 ### Test on AWS Console
 - Go to `Lambda` Service
-- select lambda with the following prefix `hotjot-bots-api-DeleteJob`
+- select lambda that loosk like `GetJobs`
 - select `Create new test event`
 - select `Amazon API Gateway AWS Proxy`
 - no updates to the test data required

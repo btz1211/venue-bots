@@ -1,4 +1,4 @@
-HotJot Bot - Update Job Status API
+Venue Bot - Update Job Status API
 ============
 
 ### Description
@@ -10,7 +10,7 @@ This lambda starts or stops a bot job
 
 ### Test on AWS Console
 - Go to `Lambda` Service
-- select lambda with the following prefix `hotjot-bots-api-UpdateJobStatus`
+- select lambda that looks like `UpdateJobStatus`
 - select `Create new test event`
 - select `Amazon API Gateway AWS Proxy`
 - replace the `pathParameters` key in test data with the following:
@@ -19,7 +19,7 @@ This lambda starts or stops a bot job
 {
     "pathParameters": {
         "jobId": "[VALID JOB ID]"
-        "action": "[start/stop]"
+        "action": "[start]"
     }
 }
 ```

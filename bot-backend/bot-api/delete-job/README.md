@@ -1,8 +1,8 @@
-HotJot Bot - Delete Job API
+Venue Bot - Delete Job API
 ============
 
 ### Description
-This lambda deletes a hotjot bot job
+This lambda deletes bot job
 
 ### Test locally
 - run `npm install` to install dependencies
@@ -10,7 +10,7 @@ This lambda deletes a hotjot bot job
 
 ### Test on AWS Console
 - Go to `Lambda` Service
-- select lambda with the following prefix `hotjot-bots-api-DeleteJob`
+- select lambda with that looks like `DeleteJob`
 - select `Create new test event`
 - select `Amazon API Gateway AWS Proxy`
 - replace the `pathParameters` key in test data with the following:

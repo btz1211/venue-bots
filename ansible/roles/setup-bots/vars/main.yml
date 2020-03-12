@@ -9,7 +9,7 @@ cloudformation_parameters: "bots-cloudformation-params.json"
 dynamo_table_name: "venue-bots"
 lambda_bucket_name: "venue-bots-lambdas"
 ui_assets_bucket_name: "venue-bots-ui"
-google_lambda_name: "venue-google-bot"
+google_lambda_name: "google-bot"
 
 bot_api_get_jobs_lambda_name: "bot-get-jobs"
 bot_api_create_job_lambda_name: "bot-create-job"

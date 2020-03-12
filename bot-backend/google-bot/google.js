@@ -52,8 +52,6 @@ module.exports = class GoogleClient {
 
         return axios.get(photoUrl, { params: params, responseType: 'stream' }
         ).then(response => {
-            // need to set the path for downloaded image, else hotjot won't be able
-            // to recognize the file extension
             response.data.path = photoReference.substring(0, 15) + '.jpg';
             return response.data
         });

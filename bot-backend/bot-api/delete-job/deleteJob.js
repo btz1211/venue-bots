@@ -2,7 +2,8 @@ const AWSClient = require('aws-client');
 
 class ValidationError extends Error {};
 
-const dynamoTable = "venue-bots"
+const dynamoTable = "venue-bots";
+const dynamoIndex = "jobid-index";
 
 exports.handler = async function (event, context, callback) {
     let response = {
@@ -19,7 +20,7 @@ exports.handler = async function (event, context, callback) {
         const awsClient = new AWSClient(dynamoTable); 
         
         const jobId = event.pathParameters.jobId;
-        const job = await awsClient.getJob(jobId);
+        const job = await awsClient.getJob(jobId, dynamoIndex);
 
         if (job) {
             console.log(`[INFO] - deleting job:`);

@@ -2,6 +2,9 @@ const GoogleClient = require('./google.js');
 const AWSClient = require('aws-client');
 
 const DYNAMO_TABLE = 'venue-bots'
+const DYNAMO_INDEX = 'jobid-index';
+const GOOGLE_API_KEY = 'google-api-key';
+
 
 exports.handler = async function (event, context) {
     let jobDetails;
@@ -9,7 +12,7 @@ exports.handler = async function (event, context) {
     const awsClient = new AWSClient(DYNAMO_TABLE);
 
     try {
-        jobDetails = await awsClient.getJob(event.jobId);
+        jobDetails = await awsClient.getJob(event.jobId, DYNAMO_INDEX);
         if (Object.entries(jobDetails).length === 0) {
             throw Error(`Cannot find job with job id: ${event.jobId}`);
         }

@@ -1,8 +1,8 @@
-HotJot Bot - Create Job API
+Venue Bots - Create Job API
 ============
 
 ### Description
-This lambda creates a hotjot bot job in disabled mode
+This lambda creates a bot job 
 
 ### Test locally
 - run `npm install` to install dependencies
@@ -10,14 +10,14 @@ This lambda creates a hotjot bot job in disabled mode
 
 ### Test on AWS Console
 - Go to `Lambda` Service
-- select lambda with the following prefix `hotjot-bots-api-CreateJob`
+- select lambda that looks like `CreateJob`
 - select `Create new test event`
 - select `Amazon API Gateway AWS Proxy`
 - replace the `body` key in test data with the following:
 
 ```
 {
-    "body": "{\"jobType\": \"foursquare\",\"radius\": \"1000\", \"location\": \"new york\", \"query\": \"nail salon\", \"postsPerHour\": \"120\",\"hotjotUsername\": \"HotJot\",\"hotjotPassword\": \"H0tj0t\"}"
+    "body": "{\"jobType\": \"google\",\"radius\": \"1000\", \"location\": \"new york\", \"query\": \"nail salon\", \"limit\": \"10\"}"
 }
 ```
 - click on `Test` button

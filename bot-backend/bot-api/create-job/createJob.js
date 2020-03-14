@@ -6,8 +6,6 @@ const botMap = {
     }
 }
 
-const dynamoTable = "venue-bots"
-
 class ValidationError extends Error {};
 
 exports.handler = async function (event, context, callback) {
@@ -24,7 +22,7 @@ exports.handler = async function (event, context, callback) {
         const jobData = JSON.parse(event.body);
         validateRequest(jobData);
         
-        const awsClient = new AWSClient(dynamoTable);
+        const awsClient = new AWSClient();
 
         // persist job info in dynamo
         console.log('[INFO] - persisting job data in dynamo');

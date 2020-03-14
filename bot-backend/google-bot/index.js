@@ -1,18 +1,15 @@
 const GoogleClient = require('./google.js');
 const AWSClient = require('aws-client');
 
-const DYNAMO_TABLE = 'venue-bots'
-const DYNAMO_INDEX = 'jobid-index';
-const GOOGLE_API_KEY = 'google-api-key';
-
+const googleAPIKeySecret = 'google-api-key';
 
 exports.handler = async function (event, context) {
     let jobDetails;
     let postCount = 0;
-    const awsClient = new AWSClient(DYNAMO_TABLE);
+    const awsClient = new AWSClient();
 
     try {
-        jobDetails = await awsClient.getJob(event.jobId, DYNAMO_INDEX);
+        jobDetails = await awsClient.getJob(event.jobId);
         if (Object.entries(jobDetails).length === 0) {
             throw Error(`Cannot find job with job id: ${event.jobId}`);
         }
@@ -21,7 +18,7 @@ exports.handler = async function (event, context) {
         const limit = Math.min(60, parseInt(jobDetails.limit.N));
 
         // setup clients
-        const googleApiKey = await awsClient.getSecret('google-api-key');
+        const googleApiKey = await awsClient.getSecret(googleAPIKeySecret);
         const googleClient = new GoogleClient(googleApiKey);
 
         // get venues based on job details

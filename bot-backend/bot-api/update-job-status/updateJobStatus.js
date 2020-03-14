@@ -5,9 +5,6 @@ const START_ACTION = 'start';
 
 class ValidationError extends Error {};
 
-const dynamoTable = "venue-bots";
-const dynamoIndex = "jobid-index";
-
 exports.handler = async function (event, context, callback) {
     let response = {
         statusCode: 200,
@@ -21,11 +18,11 @@ exports.handler = async function (event, context, callback) {
     try {
         validateRequest(event.pathParameters);
 
-        const awsClient = new AWSClient(dynamoTable);
+        const awsClient = new AWSClient();
 
         const jobId = event.pathParameters.jobId;
         const action = event.pathParameters.action;
-        const job = await awsClient.getJob(jobId, dynamoIndex);
+        const job = await awsClient.getJob(jobId);
 
         if (job) {
             console.log(`[INFO] - updating job:[${jobId}] with action: [${action}]`);

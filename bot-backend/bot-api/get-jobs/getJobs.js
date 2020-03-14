@@ -1,7 +1,5 @@
 const AWSClient = require('aws-client');
 
-const dynamoTable = "venue-bots"
-
 exports.handler = async function (event, context, callback) {
     let response = {
         statusCode: 200,
@@ -13,7 +11,7 @@ exports.handler = async function (event, context, callback) {
     };
 
     try {
-        const awsClient = new AWSClient(dynamoTable);
+        const awsClient = new AWSClient();
         const botType = event.pathParameters.botType;
 
         let timestamp;

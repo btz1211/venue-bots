@@ -5,8 +5,11 @@ const defaultJobStatus = 'created';
 const runningJobStatus = 'running';
 const stoppedJobStatus = 'stopped';
 
+const dynamoTable = 'venue-bots';
+const dynamoJobIdIndex = 'jobid-index';
+
 module.exports = class AWSClient {
-    constructor(dynamoTable, defaultRegion = 'us-east-1') {
+    constructor(defaultRegion = 'us-east-1') {
         aws.config.update({ region: defaultRegion });
         this.lambda = new aws.Lambda();
         this.ddb = new aws.DynamoDB({ params: { TableName: dynamoTable } });
@@ -43,9 +46,9 @@ module.exports = class AWSClient {
         });
     }
 
-    getJob(jobId, index) {
+    getJob(jobId) {
         const params = {
-            IndexName: index,
+            IndexName: dynamoJobIdIndex,
             ExpressionAttributeValues: {
                 ":j": { S: jobId }
             }, 

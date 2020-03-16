@@ -6,6 +6,16 @@
       "Description": "S3 Bucket name for the lambdas",
       "Type": "String"
     },
+    "UIAssetsBucketName": {
+      "ConstraintDescription": "Must be a string",
+      "Description": "S3 Bucket name for the UI Assets",
+      "Type": "String"
+    },
+    "UICloudfrontOriginName": {
+      "ConstraintDescription": "Must be a string",
+      "Description": "S3 origin name for the cloudfront distribution",
+      "Type": "String"
+    },
     "DynamoDBTableName": {
       "ConstraintDescription": "Must be a string",
       "Description": "Table name that contains bot job meta data",
@@ -31,7 +41,7 @@
     }
   },
   "Resources": {
-    "LambdaS3BucketRole": {
+    "S3BucketRole": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -54,11 +64,23 @@
     "LambdaS3Bucket": {
       "Type": "AWS::S3::Bucket",
       "DependsOn": [
-        "LambdaS3BucketRole"
+        "S3BucketRole"
       ],
       "Properties": {
         "BucketName": {
           "Ref": "LambdaBucketName"
+        },
+        "AccessControl": "Private"
+      }
+    },
+    "UIAssetsS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "DependsOn": [
+        "S3BucketRole"
+      ],
+      "Properties": {
+        "BucketName": {
+          "Ref": "UIAssetsBucketName"
         },
         "AccessControl": "Private"
       }
@@ -193,6 +215,55 @@
           }
         }
       }
+    },
+    "UICloudfrontOAI": {
+      "Type" : "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties" : {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "OAI for access static content in S3 bucket"
+        }
+      }
+    },
+    "UICloudfront": {
+      "Type": "AWS::CloudFront::Distribution",
+      "DependsOn": [
+        "UICloudfrontOAI",
+        "LambdaS3Bucket"
+      ],
+      "Properties": {
+          "DistributionConfig": {
+            "IPV6Enabled": "true",
+            "Origins" : [{
+              "DomainName" : {
+                "Ref": "UICloudfrontOriginName"
+              },
+              "Id" : "UIS3Origin",
+              "S3OriginConfig" : {
+                "OriginAccessIdentity" : {
+                  "Fn::Join": [
+                    "",
+                    ["origin-access-identity/cloudfront/",
+                      { 
+                        "Ref": "UICloudfrontOAI"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }],
+            "Enabled" : "true",
+            "DefaultRootObject" : "index.html",
+            "DefaultCacheBehavior" : {
+              "AllowedMethods" : [ "DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT" ],  
+              "TargetOriginId" : "UIS3Origin",
+              "ForwardedValues" : {
+                  "QueryString" : "false",
+                  "Cookies" : { "Forward" : "none" }
+              },
+              "ViewerProtocolPolicy" : "allow-all"
+            }
+          }
+      }     
     }
   }
 }

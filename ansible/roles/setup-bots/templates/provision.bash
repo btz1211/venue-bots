@@ -52,4 +52,9 @@ if [[ $BOTS_STACK_IN_GOOD_STATUS == 0 ]]; then
   cd $CWD
   sam package --template-file config/{{ api_cloudformation_script }} --output-template-file config/{{ api_cloudformation_script }} --s3-bucket {{ lambda_bucket_name }}
   sam deploy --template-file config/{{ api_cloudformation_script }} --stack-name venue-bots-api --capabilities CAPABILITY_IAM
+
+  API_ENDPOINT_OUTPUT=$(aws cloudformation describe-stacks --stack-name venue-bots-api --query 'Stacks[0].Outputs[0].OutputValue')
+  API_ENDPOINT=$(sed -e 's/^"//' -e 's/"$//' <<< $API_ENDPOINT)
+
+  echo "Test in browser: $API_ENDPOINT"
 fi

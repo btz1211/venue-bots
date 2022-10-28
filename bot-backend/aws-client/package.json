@@ -6,6 +6,6 @@
     "main": "aws.js",
     "dependencies": {},
     "devDependencies": {
-        "aws-sdk": "^2.548.0"
+        "aws-sdk": "^2.814.0"
     }
 }
